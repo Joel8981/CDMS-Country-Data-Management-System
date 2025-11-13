@@ -9,11 +9,7 @@ import csv
 # Importamos la biblioteca os para validar si el archivo csv existe o no en el sistema de archivos.
 import os
 
-# Importamos la biblioteca pandas (alias 'pd'), crucial para el manejo eficiente de datos tabulares,
-# incluyendo ordenamiento y estadísticas.
-import pandas as pd
-# Importamos numpy para el manejo eficiente de operaciones numéricas, a menudo usado junto a Pandas.
-import numpy as np 
+
 
 # -------------------- CREACIÓN DE DATOS Y ARCHIVO CSV --------------------
 def crear_Csv(CSV):
@@ -124,29 +120,52 @@ def filtrar_paises(CSV):
 # -------------------- ORDENAMIENTO (Opción 3 - Pandas) --------------------
 def ordenar_paises(CSV):
     """
-    Permite al usuario ordenar los datos por la columna seleccionada (nombre, poblacion, superficie).
+    Permite al usuario ordenar los datos por la columna seleccionada (nombre, poblacion, superficie)
+    utilizando solo el módulo CSV y lógica pura de Python.
     """
+    datos_paises = []
+    
+    # Mapeo de columnas a tipos de dato
+    mapeo_tipo = {
+        "nombre": str,
+        "poblacion": int,
+        "superficie": float,
+        "continente": str
+    }
+
     try:
-        df = pd.read_csv(CSV)
-    except Exception as e:
-        print(f"❌ Error al leer el archivo con Pandas: {e}")
+        # 1. CARGA DE DATOS (Módulo CSV)
+        with open(CSV, mode='r', newline="") as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                # Convertimos explícitamente los campos numéricos a su tipo
+                try:
+                    fila['poblacion'] = int(fila['poblacion'])
+                    fila['superficie'] = float(fila['superficie'])
+                    datos_paises.append(fila)
+                except ValueError:
+                    print(f"⚠️ Advertencia: Fila con datos numéricos inválidos omitida: {fila['nombre']}")
+                    continue
+                    
+    except FileNotFoundError:
+        print(f"❌ Error al leer el archivo: {CSV} no fue encontrado.")
         return
     
+    # 2. INTERACCIÓN CON EL USUARIO
     print()
     print("--- OPCION DE ORDENAMIENTO ---")
     
     columna_ordenar = input("Ordenar por **(nombre, poblacion, superficie)**: ").lower()
     
-    # Validación de que la columna existe en el DataFrame.
-    if columna_ordenar not in df.columns:
+    # Validación de la columna
+    if columna_ordenar not in ["nombre", "poblacion", "superficie"]:
         print("❌ Columna no válida. Saliendo de la opción de ordenar.")
         return
     
-    # Manejo de la dirección de ordenamiento.
+    # 3. MANEJO DE LA DIRECCIÓN
     ascendente = True
     direccion = "ASCENDENTE"
     
-    # Preguntamos la dirección solo si la columna es numérica (poblacion o superficie).
     if columna_ordenar in ["poblacion", "superficie"]:
         opcion_dir = input(f"Dirección **(ascendente / descendente)** para {columna_ordenar}: ").lower()
         
@@ -156,15 +175,30 @@ def ordenar_paises(CSV):
         
     print(f"-> Se ordenará por **{columna_ordenar.upper()}** en modo **{direccion}**.")
     
-    # df.sort_values es el método de Pandas para ordenar.
-    df_ordenado = df.sort_values(
-        by=columna_ordenar, # Columna por la que ordenar.
-        ascending=ascendente, # True para ascendente, False para descendente.
-        ignore_index=True) # Resetea el índice después de ordenar.
+    # 4. ORDENAMIENTO (Usando la función sorted() de Python)
     
-    # ... (código para imprimir resultados) ...
-    print(df_ordenado.to_string(index=False)) 
-    print("-" * 60)
+    # La clave de ordenamiento es una función lambda que extrae el valor de la columna elegida.
+    datos_ordenados = sorted(
+        datos_paises, 
+        key=lambda pais: pais[columna_ordenar], 
+        reverse=not ascendente # reverse=True si queremos descendente
+    )
+    
+    # 5. IMPRESIÓN DE RESULTADOS
+    print("\n" + "=" * 80)
+    
+    # Imprimir encabezados manualmente
+    print(f"{'País':<15} | {'Población':>20} | {'Superficie (km²)' :>20} | {'Continente':<10}")
+    print("-" * 80)
+    
+    for pais in datos_ordenados:
+        # Formato de salida con separadores de miles (:,)
+        pob_f = f"{pais['poblacion']:,.0f}"
+        sup_f = f"{pais['superficie']:,.0f}"
+        
+        print(f"{pais['nombre']:<15} | {pob_f:>20} | {sup_f:>20} | {pais['continente']:<10}")
+
+    print("-" * 80)
 
 # -------------------- ESTADÍSTICAS (Opción 4 - CORREGIDA Y Optimizada con Pandas) --------------------
 def mostrar_estadisticas(CSV):
