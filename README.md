@@ -55,3 +55,21 @@ El programa opera a través de un **Menú Principal** de consola. Debes ingresar
 | **4** | Mostrar un resumen estadístico. |
 
 **Salida de Ejemplo (Opción 1: Buscar)**
+***
+
+## 👥 Participación de los Integrantes
+
+Este proyecto fue desarrollado como Trabajo Integrador de Programación para la Universidad Tecnológica Nacional (UTN) por:
+
+* **Joel Alvarez**
+* **Marcos Bermejo**
+
+***
+
+## 🔮 Trabajo Futuro
+
+Se proponen las siguientes mejoras para expandir el alcance del proyecto:
+
+* **Migración a Base de Datos:** Migrar a una base de datos relacional (ej. SQLite o MySQL) para gestionar un mayor volumen de datos.
+* **Interfaz Gráfica (GUI):** Desarrollar una interfaz gráfica (utilizando Tkinter o PyQt) para reemplazar la interfaz de consola.
+* **Funcionalidad de Edición:** Agregar la capacidad de modificar, crear o eliminar registros de países (operaciones CRUD).
