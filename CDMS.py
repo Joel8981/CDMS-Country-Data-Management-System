@@ -1,7 +1,7 @@
 # ==============================================================================
-# GESTIÓN DE DATOS DE PAÍSES (CSV Y PANDAS)
+# GESTIÓN DE DATOS DE PAÍSE
 # Este programa gestiona datos geográficos y demográficos de países
-# utilizando la biblioteca estándar 'csv' y la potente biblioteca 'pandas'.
+# utilizando la biblioteca estándar 'csv'.
 # ==============================================================================
 
 # Importamos la biblioteca csv para crear y manejar archivos de valores separados por comas.
@@ -139,13 +139,11 @@ def ordenar_paises(CSV):
             lector = csv.DictReader(archivo)
             for fila in lector:
                 # Convertimos explícitamente los campos numéricos a su tipo
-                try:
-                    fila['poblacion'] = int(fila['poblacion'])
-                    fila['superficie'] = float(fila['superficie'])
-                    datos_paises.append(fila)
-                except ValueError:
-                    print(f"⚠️ Advertencia: Fila con datos numéricos inválidos omitida: {fila['nombre']}")
-                    continue
+                
+                fila['poblacion'] = int(fila['poblacion'])
+                fila['superficie'] = float(fila['superficie'])
+                datos_paises.append(fila)
+            
                     
     except FileNotFoundError:
         print(f"❌ Error al leer el archivo: {CSV} no fue encontrado.")
@@ -224,35 +222,31 @@ def mostrar_estadisticas(CSV):
             lector = csv.DictReader(archivo)
             
             for fila in lector:
-                try:
-                    poblacion = int(fila['poblacion'])
-                    superficie = float(fila['superficie'])
-                    continente = fila['continente']
+                poblacion = int(fila['poblacion'])
+                superficie = float(fila['superficie'])
+                continente = fila['continente']
+                
+                # 1. CÁLCULO DE TOTALES Y CONTEO GLOBAL
+                poblacion_total += poblacion
+                superficie_total += superficie
+                conteo_paises += 1 
+                
+                # 2. AGRUPACIÓN POR CONTINENTE
+                # Si el continente no está en el diccionario, lo inicializa; si ya está, suma 1.
+                if continente in paises_por_continente:
+                    paises_por_continente[continente] += 1
+                else:
+                    paises_por_continente[continente] = 1
+                
+                # 3. BÚSQUEDA DE MÁXIMOS Y MÍNIMOS
+                if poblacion > max_pob:
+                    max_pob = poblacion
+                    pais_max = fila['nombre']
                     
-                    # 1. CÁLCULO DE TOTALES Y CONTEO GLOBAL
-                    poblacion_total += poblacion
-                    superficie_total += superficie
-                    conteo_paises += 1 
-                    
-                    # 2. AGRUPACIÓN POR CONTINENTE
-                    # Si el continente no está en el diccionario, lo inicializa; si ya está, suma 1.
-                    if continente in paises_por_continente:
-                        paises_por_continente[continente] += 1
-                    else:
-                        paises_por_continente[continente] = 1
-                    
-                    # 3. BÚSQUEDA DE MÁXIMOS Y MÍNIMOS
-                    if poblacion > max_pob:
-                        max_pob = poblacion
-                        pais_max = fila['nombre']
-                        
-                    if poblacion < min_pob:
-                        min_pob = poblacion
-                        pais_min = fila['nombre']
+                if poblacion < min_pob:
+                    min_pob = poblacion
+                    pais_min = fila['nombre']
 
-                except ValueError:
-                    # Ignorar filas donde los datos numéricos no son válidos
-                    continue
                     
     except FileNotFoundError:
         print(f"❌ Error: El archivo '{CSV}' no fue encontrado.")
